@@ -5,13 +5,16 @@ from todo.models import Task
 
 # Create your views here.
 def index(request):
-    if request.method == "post":
-        task = Task(title=request.POST["title"],due_at=make_aware(parse_datetime(request.POST["due_at"])))
+    if request.method == "POST":  
+        task = Task(title=request.POST["title"], due_at=make_aware(parse_datetime(request.POST["due_at"])))
         task.save()
 
     tasks = Task.objects.all()
-
+    print(list(tasks.values()))
     context = {
-        "task":tasks
+        "tasks": tasks
     }
+
+    
+
     return render(request,"todo/index.html",context)

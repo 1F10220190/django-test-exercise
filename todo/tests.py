@@ -1,4 +1,4 @@
-from django.test import TestCase
+from django.test import TestCase,Client
 from django.utils import timezone
 from datetime import datetime
 from todo.models import Task
@@ -11,7 +11,7 @@ class SampleTestCase(TestCase):
 class TaskModelTestCase(TestCase):
     def test_creat_task1(self):
         due = timezone.make_aware(datetime(2023,6,30,23,59,59))
-        task = Task(title="task1",due_at=due)
+        task = Task(title='task1',due_at=due)
         task.save()
 
         task = Task.objects.get(pk=task.pk)
@@ -20,7 +20,7 @@ class TaskModelTestCase(TestCase):
         self.assertEqual(task.due_at,due)
 
     def test_creat_task2(self):
-        task = Task(title="task2")
+        task = Task(title='task2')
         task.save()
 
         task = Task.objects.get(pk=task.pk)
@@ -31,7 +31,7 @@ class TaskModelTestCase(TestCase):
     def test_is_overdue_future(self):
         due = timezone.make_aware(datetime(2023,6,30,23,59,59))
         current = timezone.make_aware(datetime(2023,6,30,0,0,0))
-        task = Task(title="task3",due_at=due)
+        task = Task(title='task3',due_at=due)
         task.save()
 
         self.assertFalse(task.is_overdue(current))
@@ -39,15 +39,32 @@ class TaskModelTestCase(TestCase):
     def test_is_overdue_past(self):
         due = timezone.make_aware(datetime(2023,6,30,23,59,59))
         current = timezone.make_aware(datetime(2023,7,1,0,0,0))
-        task = Task(title="task4",due_at=due)
+        task = Task(title='task4',due_at=due)
         task.save()
 
         self.assertTrue(task.is_overdue(current))
 
     def test_is_overdue_none(self):
         current = timezone.make_aware(datetime(2023,7,1,0,0,0))
-        task = Task(title="task5")
+        task = Task(title='task5')
         task.save()
 
         self.assertFalse(task.is_overdue(current))
 
+class TodoViewTaskCase(TestCase):
+    def test_index_get(self):
+        client = Client()
+        responce = client.get('/')
+
+        self.assertEqual(responce.status_code,200)
+        self.assertEqual(responce.templates[0].name,'todo/index.html')
+        self.assertEqual(len(responce.context['tasks']),0)
+
+    def test_index_post(self):
+        client = Client()
+        data = {'title':'Test Task','due_at':'2023-06-30 23:59:59'}
+        responce = client.post('/',data)
+
+        self.assertEqual(responce.status_code,200)
+        self.assertEqual(responce.templates[0].name,'todo/index.html')
+        self.assertEqual(len(responce.context['tasks']),1)
