@@ -70,17 +70,18 @@ class TodoViewTaskCase(TestCase):
         self.assertEqual(len(responce.context['tasks']),1)
 
     def test_index_get_order_post(self):
-        task1=Task(title="task1",due_at=timezone.make_aware(datetime(2023,7,1)))
+        task1 = Task(title="task1", due_at=timezone.make_aware(datetime(2023, 7, 1)))
         task1.save()
-        task2=Task(title="task2",due_at=timezone.make_aware(datetime(2023,8,1)))
+        task2 = Task(title="task2", due_at=timezone.make_aware(datetime(2023, 8, 1)))
         task2.save()
         client = Client()
-        responce = client.get("/?order=post")
+        response = client.get("/?order=post")
 
-        self.assertEqual(responce.status_code,200)
-        self.assertEqual(responce.templates[0].name,'todo/index.html')
-        self.assertEqual(responce.context['tasks'][0],task2)
-        self.assertEqual(responce.context['tasks'][1],task1)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.templates[0].name, 'todo/index.html')
+        self.assertEqual(response.context['tasks'][0], task2)
+        self.assertEqual(response.context['tasks'][1], task1)
+
 
     def test_index_get_order_post(self):
         task1=Task(title="task1",due_at=timezone.make_aware(datetime(2023,7,1)))
@@ -95,19 +96,19 @@ class TodoViewTaskCase(TestCase):
         self.assertEqual(responce.context['tasks'][0],task1)
         self.assertEqual(responce.context['tasks'][1],task2)
 
-    def test_index_get_three_content(self):
-        task1 = Task(title='task1', due_at=timezone.make_aware(datetime(2023, 7, 1)))
-        task1.save()
-        task2 = Task(title='task2', due_at=timezone.make_aware(datetime(2023, 8, 1)))
-        task2.save()
-        task3 = Task(title='task3', due_at=timezone.make_aware(datetime(2023, 9, 1)))
-        task3.save()
-        client = Client()
-        response = client.get("/")
 
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.templates[0].name, 'todo/index.html')
-        self.assertEqual(len(response.context['tasks']), 3)
-        self.assertEqual(response.context['tasks'][0], task1)
-        self.assertEqual(response.context['tasks'][1], task2)
-        self.assertEqual(response.context['tasks'][2], task3)
+    def test_index_get_order_post(self):
+        task=Task(title="task1",due_at=timezone.make_aware(datetime(2023,7,1)))
+        task.save()
+        client = Client()
+        responce = client.get("/{}/".format(task.pk))
+
+        self.assertEqual(responce.status_code,200)
+        self.assertEqual(responce.templates[0].name,'todo/detail.html')
+        self.assertEqual(responce.context['task'],task)
+
+    def test_index_get_order_fail(self):
+        client = Client()
+        responce = client.get("/{}/".format("/1/"))
+
+        self.assertEqual(responce.status_code,404)
