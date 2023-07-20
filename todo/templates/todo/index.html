@@ -22,6 +22,10 @@
         <input id="dueInput" name="due_at" type="datetime-local">
       </div>
       <div>
+        <label for="commentInput">Comment</label><br>
+        <input id="commentInput" name="comment" type="text" placeholder="Comment">
+      </div>
+      <div>
         <button type="submit">Submit</button>
       </div>
     </form>
@@ -39,6 +43,7 @@
         <li>Posted at: {{ task.posted_at }}</li>
         {% if task.due_at %} 
         <li>Due at: {{ task.due_at }}</li>
+        <li>Comment: {{task.comment}}</li>
         <li>Status: Completed</li>
         {% else %}
         <li>Status: Not Completed</li>

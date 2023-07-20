@@ -6,6 +6,7 @@ class Task(models.Model):
     compaleted = models.BooleanField(default=False)
     posted_at = models.DateTimeField(default=timezone.now)
     due_at = models.DateTimeField(null=True,blank=True)
+    comment = models.TextField(null=True, blank=True)
 
     def is_overdue(self, dt):
         if self.due_at is None:
