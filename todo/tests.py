@@ -112,3 +112,12 @@ class TodoViewTaskCase(TestCase):
         responce = client.get("/{}/".format("/1/"))
 
         self.assertEqual(responce.status_code,404)
+
+    def test_index_post(self):
+        client = Client()
+        data = {
+            'title': 'Task Title',
+            'due_at': '2023-07-21 12:00:00',
+            'comment': 'This is a comment.',  # 'comment'キーのデータを追加
+        }
+        response = client.post('/', data)
